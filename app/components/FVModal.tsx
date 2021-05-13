@@ -35,26 +35,30 @@ const FVModal: React.FC = ({
             onPress={() => setModalVisible(false)}
             style={styles.close}
           />
-          <View style={styles.modalView}>
+          <>
             {filteredDataSource.length === 0 ? (
-              <>
+              <View style={styles.modalView}>
                 <Text style={styles.header}>NOT FOUND</Text>
-              </>
+              </View>
             ) : (
-              <>
-                <Text style={styles.header}>{selectedItem?.name}</Text>
-
-                <View>
+              <View style={styles.modalView}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.header}>{selectedItem?.name}</Text>
+                </View>
+                <View style={styles.modalBody}>
                   <Text style={styles.temp}>
                     temperature: {selectedItem?.main?.temp}
                   </Text>
                 </View>
-                <Pressable onPress={() => addItemFV(selectedItem.id)}>
+                <Pressable
+                  style={styles.modalContent}
+                  onPress={() => addItemFV(selectedItem.id)}
+                >
                   <Text style={{ color: "black" }}>ADD TO FAVARIT</Text>
                 </Pressable>
-              </>
+              </View>
             )}
-          </View>
+          </>
         </View>
       </View>
     </Modal>
@@ -75,11 +79,8 @@ const styles = StyleSheet.create({
     width: AppStyles.dimensions.width * 0.95,
     marginHorizontal: 20,
     borderRadius: 20,
-    padding: 20,
-    alignItems: "center",
     elevation: 5,
     backgroundColor: AppStyles.color.COLOR_GREY_WHITE,
-    alignSelf: "center",
   },
   button: {
     borderRadius: 20,
@@ -115,6 +116,17 @@ const styles = StyleSheet.create({
   temp: {
     color: AppStyles.color.COLOR_BLACK,
     marginVertical: 10,
+    padding: 10,
+  },
+  modalContent: {
+    alignSelf: "center",
+    margin: 20,
+  },
+  modalBody: {
+    borderBottomColor: AppStyles.color.COLOR_BLACK,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    alignItems: "center",
   },
 });
 
