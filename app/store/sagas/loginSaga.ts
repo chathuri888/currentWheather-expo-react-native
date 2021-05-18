@@ -19,7 +19,6 @@ export default function* loginAsync({
 
   try {
     let { data } = yield call(apiCall);
-
     yield put(commonAction.onLocationResponse(data));
     const response = { success: true, data: { id: 1 }, message: "Success" };
     if (data?.list?.length !== 0) {

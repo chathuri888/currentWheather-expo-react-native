@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { View, Image, TextInput } from "react-native";
+import { View, Image, TextInput, Alert } from "react-native";
 import { Button, Colors } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import Constants from "expo-constants";
 
 import * as loginActions from "app/store/actions/loginActions";
 import styles from "./styles";
-import { ILoginState } from "app/models/reducers/login";
 import * as Location from "expo-location";
 import Images from "../../config/images";
 
-interface IState {
-  loginReducer: ILoginState;
-}
+const ErrorMsg1 = "Permission to access location was denied";
+
+const ErrorMsg2 =
+  "this will not work on Sketch in an emulator.it will get default location wheather.Try it on your device!";
 
 const Login: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [email, onChangeEmail] = React.useState("");
@@ -23,7 +26,7 @@ const Login: React.FC = () => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        setErrorMsg(ErrorMsg1);
         return;
       }
 
@@ -32,19 +35,24 @@ const Login: React.FC = () => {
     })();
   }, []);
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
-  const dispatch = useDispatch();
-
   const onLogin = () => {
-    const latitude = location?.coords?.latitude;
-    const longitude = location?.coords?.longitude;
-    dispatch(loginActions.requestLogin("test", "1234", latitude, longitude));
+    if (!Constants.isDevice) {
+      setErrorMsg(ErrorMsg2);
+      Alert.alert("Warning", ErrorMsg2, [
+        {
+          text: "OK",
+          onPress: loginDefaultLocation,
+        },
+      ]);
+    } else {
+      const latitude = location?.coords?.latitude;
+      const longitude = location?.coords?.longitude;
+      dispatch(loginActions.requestLogin("test", "1234", latitude, longitude));
+    }
+  };
+
+  const loginDefaultLocation = () => {
+    dispatch(loginActions.requestLogin("test", "1234", 6.927079, 79.861244));
   };
 
   return (
